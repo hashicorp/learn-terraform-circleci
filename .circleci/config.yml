@@ -104,9 +104,9 @@ jobs:
           command: |
             pip install --user awscli
             export PATH="~/.local/bin:$PATH"
-            wget "${APP_URL}"
+            git clone https://github.com/hashicorp/learn-terraform-circleci/ .
             pwd
-            aws s3 sync --acl public-read "/home/circleci/project" s3://${APP_BUCKET}
+            aws s3 sync --acl public-read "/home/circleci/project/assets" s3://${APP_BUCKET}
 
 
   destroy:
