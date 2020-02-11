@@ -43,29 +43,12 @@ resource "aws_iam_user_policy" "circleci" {
   policy = data.template_file.circleci_policy.rendered
 }
 
-data "aws_route53_zone" "selected" {
-  name         = "${var.zone}."
-  private_zone = false
-}
-
-resource "aws_route53_record" "app" {
-  zone_id = data.aws_route53_zone.selected.zone_id
-  name    = "${var.app}.${var.zone}"
-  type    = "A"
-
-  alias {
-    name                   = aws_s3_bucket.portfolio.website_domain
-    zone_id                = aws_s3_bucket.portfolio.hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
 resource "aws_s3_bucket" "portfolio" {
   tags = {
     Name = "Portfolio Website Bucket"
   }
 
-  bucket = "${var.app}.${var.zone}"
+  bucket = "${var.app}.${var.label}"
   acl    = "public-read"
 
   website {
