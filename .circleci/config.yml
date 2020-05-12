@@ -24,7 +24,7 @@ attach_workspace: &attach_workspace
 
 
 # Step to restore repository from cache
-persist_to_workspace: &persist_to_workspace
+persist_to_workspace: 
   root: ~/project
   paths:
       - *working_directory
@@ -72,7 +72,6 @@ jobs:
             cd ~/project/
             terraform init -backend-config="token=${TF_API_TOKEN}"
             terraform fmt
-      - *persist_to_workspace
 
 
   plan:
