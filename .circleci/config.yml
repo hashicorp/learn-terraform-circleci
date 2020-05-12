@@ -19,8 +19,8 @@ default_config: &default_config
 repo_cache_key: &repo_cache_key
   v1-repo-{{ .Branch }}-{{ .Revision }}
 
-  attach_workspace: &attach_workspace
-    at: *working_directory
+attach_workspace: &attach_workspace
+  at: *working_directory
 
 
 # Step to restore repository from cache
