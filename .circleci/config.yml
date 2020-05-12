@@ -25,10 +25,6 @@ persist_to_workspace: &persist_to_workspace
   paths:
       - *working_directory
 
-attach_workspace: &attach_workspace  
-  attach_workspace:    
-    at: *working_directory
-
 set_terraform_environment: &set_terraform_environment
   run:
     name: set terraform environment
@@ -56,6 +52,8 @@ apply_job: &apply_job
           cd ~/project/
           terraform init -backend-config="token=${TF_API_TOKEN}"
           terraform apply --auto-approve
+    - *persist_to_workspace
+
 jobs:
 
   build:
@@ -72,6 +70,8 @@ jobs:
             cd ~/project/
             terraform init -backend-config="token=${TF_API_TOKEN}"
             terraform fmt
+      - *persist_to_workspace
+
 
   plan:
     <<: *default_config
@@ -86,6 +86,8 @@ jobs:
             source $BASH_ENV
             cd ~/project/
             terraform plan
+      - *persist_to_workspace
+
 
 
 
