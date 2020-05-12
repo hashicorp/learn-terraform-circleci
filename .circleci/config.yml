@@ -21,9 +21,13 @@ repo_cache_key: &repo_cache_key
 
 # Step to restore repository from cache
 persist_to_workspace: &persist_to_workspace
-  root: /root/project
+  root: ~/project
   paths:
       - *working_directory
+
+attach_workspace: &attach_workspace  
+  attach_workspace:    
+    at: *working_directory
 
 set_terraform_environment: &set_terraform_environment
   run:
