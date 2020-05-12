@@ -19,6 +19,11 @@ default_config: &default_config
 repo_cache_key: &repo_cache_key
   v1-repo-{{ .Branch }}-{{ .Revision }}
 
+  attach_workspace: &attach_workspace
+  attach_workspace:
+    at: *working_directory
+
+
 # Step to restore repository from cache
 persist_to_workspace: &persist_to_workspace
   root: ~/project
@@ -41,10 +46,10 @@ terraform_init: &terraform_init
 apply_job: &apply_job
   <<: *default_config
   steps:
+    - *attach_workspace
     - *set_terraform_environment
     - *terraform_init
-    - attach_workspace:
-        at: *working_directory
+
     - run:
         name: terraform apply
         command: |
@@ -52,7 +57,6 @@ apply_job: &apply_job
           cd ~/project/
           terraform init -backend-config="token=${TF_API_TOKEN}"
           terraform apply --auto-approve
-    - *persist_to_workspace
 
 jobs:
 
@@ -60,8 +64,7 @@ jobs:
     <<: *default_config
     steps:
       - checkout
-      - attach_workspace:
-          at: *working_directory
+      - *attach_workspace
       - *set_terraform_environment
       - run:
           name: terraform fmt
@@ -76,8 +79,7 @@ jobs:
   plan:
     <<: *default_config
     steps:
-      - attach_workspace:
-          at: *working_directory
+      - *attach_workspace
       - *set_terraform_environment
       - *terraform_init
       - run:
@@ -86,7 +88,6 @@ jobs:
             source $BASH_ENV
             cd ~/project/
             terraform plan
-      - *persist_to_workspace
 
 
 
@@ -114,8 +115,7 @@ jobs:
   destroy:
     <<: *default_config
     steps:
-      - attach_workspace:
-          at: *working_directory
+      - *attach_workspace
       - *set_terraform_environment
       - *terraform_init
       - run:
