@@ -58,7 +58,8 @@ jobs:
     <<: *default_config
     steps:
       - checkout
-      - attach_workspace: *working_directory
+      - attach_workspace:
+          at: *working_directory
       - *set_terraform_environment
       - run:
           name: terraform fmt
@@ -71,7 +72,8 @@ jobs:
   plan:
     <<: *default_config
     steps:
-      - attach_workspace: *working_directory
+      - attach_workspace:
+          at: *working_directory
       - *set_terraform_environment
       - *terraform_init
       - run:
@@ -106,7 +108,8 @@ jobs:
   destroy:
     <<: *default_config
     steps:
-      - attach_workspace: *working_directory
+      - attach_workspace:
+          at: *working_directory
       - *set_terraform_environment
       - *terraform_init
       - run:
