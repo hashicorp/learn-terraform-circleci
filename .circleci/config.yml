@@ -53,7 +53,7 @@ apply_job: &apply_job
     - persist_to_workspace:
         root: *working_directory
         paths:
-            - *working_directory
+            - .terraform
 
 
 jobs:
@@ -71,10 +71,6 @@ jobs:
             cd ~/project/
             terraform init -backend-config="token=${TF_API_TOKEN}"
             terraform fmt
-      - persist_to_workspace:
-          root: *working_directory
-          paths:
-            - *working_directory
 
 
   plan:
@@ -89,10 +85,7 @@ jobs:
             source $BASH_ENV
             cd ~/project/
             terraform plan
-      - persist_to_workspace:
-          root: *working_directory
-          paths:
-            - *working_directory
+ 
 
 
 
