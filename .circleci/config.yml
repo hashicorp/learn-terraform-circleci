@@ -63,7 +63,7 @@ apply_job: &apply_job
 
 check_and_update_pr: &check_and_update_pr
   parameters:
-    output:
+    pr_comment:
       description: PR comment update
       type: string
   run:
@@ -84,7 +84,7 @@ check_and_update_pr: &check_and_update_pr
       -u $GH_USER:$GH_API \
       --header 'Content-Type: application/json' \
       --data-raw '{
-       "body": "<< parameters.output >>"
+       "body": "<< parameters.pr_comment >>"
       }'
 
 jobs:
@@ -115,8 +115,8 @@ jobs:
             source $BASH_ENV
             cd ~/project/
             plan_result=$(terraform plan -input=false)
-      - *check_and_update_pr:
-          output: $plan_result
+      - check_and_update_pr:
+          pr_comment: $plan_result
 
   apply:
     <<: *apply_job
