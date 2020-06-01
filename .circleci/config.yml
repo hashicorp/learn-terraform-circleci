@@ -88,9 +88,9 @@ jobs:
           command: |
             source $BASH_ENV
             cd ~/project/
-            terraform plan -input=false > plan-output
+            terraform plan -input=false > /tmp/plan-output
       - persist_to_workspace:
-          root: project/
+          root: .
           paths:
             - plan-output      
 
@@ -161,6 +161,7 @@ workflows:
       - plan:
           requires:
             - build
+            - update_pr
       - apply:
           requires:
             - plan
