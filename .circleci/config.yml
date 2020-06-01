@@ -158,6 +158,7 @@ workflows:
   build_plan_approve_apply:
     jobs:
       - build
+      - update_pr
       - plan:
           requires:
             - build
