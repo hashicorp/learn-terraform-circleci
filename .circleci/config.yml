@@ -61,32 +61,6 @@ apply_job: &apply_job
           terraform init -backend-config="token=${TF_API_TOKEN}"
           terraform apply --auto-approve
 
-check_and_update_pr: &check_and_update_pr
-  parameters:
-    pr_comment:
-      description: PR comment update
-      type: string
-  run:
-    name: check for an existing PR
-    command: |
-      apt-get install jq
-
-      pr_response=$(curl --location --request GET "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls?head=$CIRCLE_PROJECT_USERNAME:$CIRCLE_BRANCH&state=open" \
-      -u $GH_USER:$GH_API)
-
-      if [ $(echo $pr_response | jq length) -eq 0 ]; then
-        echo "No PR found to update"
-      else
-        pr_comment_url=$(echo $pr_response | jq -r ".[]._links.comments.href")
-      fi
-
-      curl --location --request POST "$pr_comment_url" \
-      -u $GH_USER:$GH_API \
-      --header 'Content-Type: application/json' \
-      --data-raw '{
-       "body": "<< parameters.pr_comment >>"
-      }'
-
 jobs:
 
   build:
@@ -114,9 +88,38 @@ jobs:
           command: |
             source $BASH_ENV
             cd ~/project/
-            plan_result=$(terraform plan -input=false)
-      - *check_and_update_pr:
-          pr_comment: $plan_result
+            terraform plan -input=false > plan-output
+      - persist_to_workspace:
+          root: project/
+          paths:
+            - plan-output      
+
+  update_pr:
+    docker: [{ image: "circleci/python:latest" }]
+    working_directory: "~/project"
+
+    steps:
+      - attach_workspace:
+          at: /tmp/project
+      - run: |
+          pip install jq
+
+          pr_response=$(curl --location --request GET "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls?head=$CIRCLE_PROJECT_USERNAME:$CIRCLE_BRANCH&state=open" \
+          -u $GH_USER:$GH_API)
+
+          if [ $(echo $pr_response | jq length) -eq 0 ]; then
+            echo "No PR found to update"
+          else
+            pr_comment_url=$(echo $pr_response | jq -r ".[]._links.comments.href")
+          fi
+
+          pr_comment = `cat /tmp/project/plan-output`
+          curl --location --request POST "$pr_comment_url" \
+          -u $GH_USER:$GH_API \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+          "body": "$pr_comment"
+          }'
 
   apply:
     <<: *apply_job
