@@ -115,7 +115,7 @@ jobs:
             source $BASH_ENV
             cd ~/project/
             plan_result=$(terraform plan -input=false)
-      - check_and_update_pr:
+      - *check_and_update_pr:
           pr_comment: $plan_result
 
   apply:
