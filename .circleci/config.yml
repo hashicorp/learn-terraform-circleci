@@ -88,9 +88,10 @@ jobs:
           command: |
             source $BASH_ENV
             cd ~/project/
+            pwd
             terraform plan -input=false > /tmp/plan-output
       - persist_to_workspace:
-          root: .
+          root: /tmp
           paths:
             - plan-output      
 
