@@ -101,7 +101,7 @@ jobs:
 
     steps:
       - attach_workspace:
-          at: /tmp/project
+          at: /tmp
       - run: |
           pip install jq
 
@@ -112,15 +112,16 @@ jobs:
             echo "No PR found to update"
           else
             pr_comment_url=$(echo $pr_response | jq -r ".[]._links.comments.href")
-          fi
 
-          pr_comment = `cat /tmp/project/plan-output`
-          curl --location --request POST "$pr_comment_url" \
-          -u $GH_USER:$GH_API \
-          --header 'Content-Type: application/json' \
-          --data-raw '{
-          "body": "$pr_comment"
-          }'
+            pr_comment = `cat /tmp/plan-output`
+
+            curl --location --request POST "$pr_comment_url" \
+            -u $GH_USER:$GH_API \
+            --header 'Content-Type: application/json' \
+            --data-raw '{
+            "body": "$pr_comment"
+            }'
+          fi
 
   apply:
     <<: *apply_job
