@@ -112,7 +112,7 @@ jobs:
           else
             pr_comment_url=$(echo $pr_response | jq -r ".[]._links.comments.href")
           fi
-sudo apt-get install jq
+
           pr_comment = `cat /tmp/project/plan-output`
           curl --location --request POST "$pr_comment_url" \
           -u $GH_USER:$GH_API \
