@@ -62,9 +62,7 @@ workflows:
   build_plan_approve_apply:
     jobs:
       - plan
-      - apply:
-          requires:
-            - plan
+      - apply
       - deployment:
           requires:
             - apply
