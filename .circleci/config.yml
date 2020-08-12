@@ -68,7 +68,7 @@ jobs:
       - persist_to_workspace:
           root: /tmp/
           paths:
-          - project
+            - project
 
   plan:
     <<: *default_config
