@@ -1,7 +1,6 @@
 version: 2
 
 jobs:
-
   plan:
     working_directory: /tmp/project
     docker:
@@ -20,7 +19,6 @@ jobs:
           root: .
           paths:
             - .
-
   apply:
     steps:
       - attach_workspace:
@@ -36,11 +34,9 @@ jobs:
           root: .
           paths:
             - .
-
   deploy:
     docker: [{ image: "circleci/python:latest" }]
     working_directory: "/tmp/project"
-
     steps:
       - run:
           name: "Push to S3"
@@ -50,8 +46,6 @@ jobs:
             git clone https://github.com/hashicorp/learn-terraform-circleci/ .
             pwd
             aws s3 sync --acl public-read "/home/circleci/project/assets" s3://${APP_BUCKET}
-
-
   destroy:
     steps:
       - attach_workspace:
@@ -63,8 +57,6 @@ jobs:
             source /root/.bashrc
             cd /tmp/project/
             terraform destroy --auto-approve
-
-
 workflows:
   version: 2
   build_plan_approve_apply:
