@@ -46,7 +46,7 @@ apply_job: &apply_job
           cd ~/project/
           terraform init -backend-config="token=${TF_API_TOKEN}"
           terraform apply --auto-approve
-      - *persist_to_workspace
+    - *persist_to_workspace
 
 jobs:
 
