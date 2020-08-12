@@ -5,6 +5,11 @@ references:
 base_image: &base_image
   hashicorp/terraform:light
 
+- persist_to_workspace: &persist_to_workspace
+  root: .
+  paths:
+    - ~/project
+
 working_directory: &working_directory
   ~/project
 
@@ -19,43 +24,29 @@ default_config: &default_config
 repo_cache_key: &repo_cache_key
   v1-repo-{{ .Branch }}-{{ .Revision }}
 
-attach_workspace: &attach_workspace
-  attach_workspace:
-    at: *working_directory
-
-set_terraform_environment: &set_terraform_environment
-  run:
-    name: set terraform environment
-    command: |
-      cd && touch $BASH_ENV
-      cd ~/project/
 terraform_init: &terraform_init
   run:
     name: terraform init
     command: |
+      cd && touch $BASH_ENV
       source $BASH_ENV
       cd ~/project/
       terraform init -backend-config="token=${TF_API_TOKEN}"
+
 apply_job: &apply_job
   <<: *default_config
   steps:
-    - checkout
-    - *attach_workspace
-    - *set_terraform_environment
     - *terraform_init
 
     - run:
         name: terraform apply
         command: |
+          cd && touch $BASH_ENV
           source $BASH_ENV
           cd ~/project/
           terraform init -backend-config="token=${TF_API_TOKEN}"
           terraform apply --auto-approve
-    - persist_to_workspace:
-        root: *working_directory
-        paths:
-            - .terraform
-
+      - *persist_to_workspace
 
 jobs:
 
@@ -63,34 +54,30 @@ jobs:
     <<: *default_config
     steps:
       - checkout
-      - *attach_workspace
-      - *set_terraform_environment
       - run:
           name: terraform fmt
           command: |
+            cd && touch $BASH_ENV
             source $BASH_ENV
             cd ~/project/
             terraform init -backend-config="token=${TF_API_TOKEN}"
             terraform fmt
+      - *persist_to_workspace
 
 
   plan:
     <<: *default_config
     steps:
-      - checkout
-      - *attach_workspace
-      - *set_terraform_environment
+      - *restore_repo
       - *terraform_init
       - run:
           name: terraform plan
           command: |
+            cd && touch $BASH_ENV
             source $BASH_ENV
             cd ~/project/
             terraform plan
- 
-
-
-
+      - *persist_to_workspace
 
 
 
@@ -117,8 +104,7 @@ jobs:
   destroy:
     <<: *default_config
     steps:
-      - *attach_workspace
-      - *set_terraform_environment
+      - *restore_repo
       - *terraform_init
       - run:
           name: "Destruction of env"
@@ -126,6 +112,7 @@ jobs:
             source $BASH_ENV
             cd ~/project/
             terraform destroy --auto-approve
+
 
 
 workflows:
@@ -149,3 +136,4 @@ workflows:
       - destroy:
           requires:
             - hold
+
