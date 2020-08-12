@@ -50,7 +50,7 @@ jobs:
             export PATH="~/.local/bin:$PATH"
             git clone https://github.com/hashicorp/learn-terraform-circleci/ .
             pwd
-            aws s3 sync --acl public-read "/home/circleci/project/assets" s3://${APP_BUCKET}
+            aws s3 sync --acl public-read "/tmp/project/assets" s3://${APP_BUCKET}
 
   destroy:
     working_directory: /tmp/project
@@ -74,7 +74,7 @@ workflows:
       - apply:
           requires:
             - plan
-      - deployment:
+      - deploy:
           requires:
             - apply
       - hold:
