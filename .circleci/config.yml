@@ -1,6 +1,7 @@
 version: 2
 
 jobs:
+
   plan:
     working_directory: /tmp/project
     docker:
@@ -60,6 +61,7 @@ jobs:
           name: terraform destroy
           command: |
             terraform destroy --auto-approve
+
 workflows:
   version: 2
   plan_approve_apply:
