@@ -68,7 +68,6 @@ jobs:
   plan:
     <<: *default_config
     steps:
-      - *restore_repo
       - *terraform_init
       - run:
           name: terraform plan
@@ -104,7 +103,6 @@ jobs:
   destroy:
     <<: *default_config
     steps:
-      - *restore_repo
       - *terraform_init
       - run:
           name: "Destruction of env"
