@@ -20,6 +20,24 @@ jobs:
           paths:
             - .
 
+  apply:
+    working_directory: /tmp/project
+    docker:
+      - image: hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+        at: .
+      - run:
+          name: terraform fmt
+          command: |
+            cd && touch /root/.bashrc
+            source /root/.bashrc
+            cd /tmp/project/
+            terraform apply
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
   deploy:
     docker: [{ image: "circleci/python:latest" }]
     working_directory: "/tmp/project"
@@ -33,6 +51,9 @@ jobs:
             pwd
             aws s3 sync --acl public-read "/home/circleci/project/assets" s3://${APP_BUCKET}
   destroy:
+    working_directory: /tmp/project
+    docker:
+      - image: hashicorp/terraform:light
     steps:
       - attach_workspace:
           at: .
