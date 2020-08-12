@@ -21,7 +21,6 @@ jobs:
           paths:
             - .
 
-
   apply:
     steps:
       - attach_workspace:
@@ -56,7 +55,7 @@ jobs:
   destroy:
     steps:
       - attach_workspace:
-        at: .
+          at: .
       - run:
           name: terraform fmt
           command: |
