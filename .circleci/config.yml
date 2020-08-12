@@ -1,98 +1,44 @@
 version: 2
 
-references:
-
-base_image: &base_image
-  hashicorp/terraform:light
-
-working_directory: &working_directory
-  /tmp/
-
-default_config: &default_config
-  docker:
-    - image: *base_image
-  working_directory: *working_directory
-  environment:
-    BASH_ENV: /root/.bashrc
-    TERRAFORM_ENV: /home/circleci/project/
-
-repo_cache_key: &repo_cache_key
-  v1-repo-{{ .Branch }}-{{ .Revision }}
-
-terraform_init: &terraform_init
-  run:
-    name: terraform init
-    command: |
-      cd && touch $BASH_ENV
-      source $BASH_ENV
-      cd /tmp/project/
-      terraform init -backend-config="token=${TF_API_TOKEN}"
-  persist_to_workspace:
-    root: /tmp
-    paths:
-      - project
-
-
-apply_job: &apply_job
-  <<: *default_config
-  steps:
-    - *terraform_init
-
-    - run:
-        name: terraform apply
-        command: |
-          cd && touch $BASH_ENV
-          source $BASH_ENV
-          cd /tmp/project/
-          terraform init -backend-config="token=${TF_API_TOKEN}"
-          terraform apply --auto-approve
-    - persist_to_workspace:
-        root: /tmp/
-        paths:
-          - project
-
 jobs:
 
-  build:
-    <<: *default_config
+  plan:
+    working_directory: /tmp/project
+    docker:
+      - image: hashicorp/terraform:light
     steps:
       - checkout
       - run:
           name: terraform fmt
           command: |
-            cd && touch $BASH_ENV
-            source $BASH_ENV
+            cd && touch /root/.bashrc
+            source /root/.bashrc
             cd /tmp/project/
             terraform init -backend-config="token=${TF_API_TOKEN}"
-            terraform fmt
+            terraform fmt && terraform plan
       - persist_to_workspace:
-          root: /tmp/
+          root: .
           paths:
-            - project
-
-  plan:
-    <<: *default_config
-    steps:
-      - *terraform_init
-      - run:
-          name: terraform plan
-          command: |
-            cd && touch $BASH_ENV
-            source $BASH_ENV
-            cd /tmp/project/
-            terraform plan
-      - persist_to_workspace:
-          root: /tmp/
-          paths:
-            - project
+            - .
 
 
   apply:
-    <<: *apply_job
-  apply-with-approval:
-    <<: *apply_job
+    steps:
+      - attach_workspace:
+        at: .
+      - run:
+          name: terraform fmt
+          command: |
+            cd && touch /root/.bashrc
+            source /root/.bashrc
+            cd /tmp/project/
+            terraform apply
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
-  deployment:
+  deploy:
     docker: [{ image: "circleci/python:latest" }]
     working_directory: "/tmp/project"
 
@@ -108,15 +54,17 @@ jobs:
 
 
   destroy:
-    <<: *default_config
     steps:
-      - *terraform_init
+      - attach_workspace:
+        at: .
       - run:
-          name: "Destruction of env"
+          name: terraform fmt
           command: |
-            source $BASH_ENV
+            cd && touch /root/.bashrc
+            source /root/.bashrc
             cd /tmp/project/
             terraform destroy --auto-approve
+
 
 
 
@@ -124,10 +72,7 @@ workflows:
   version: 2
   build_plan_approve_apply:
     jobs:
-      - build
       - plan:
-          requires:
-            - build
       - apply:
           requires:
             - plan
