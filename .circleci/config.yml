@@ -28,7 +28,7 @@ terraform_init: &terraform_init
       cd /home/circleci/project/
       terraform init -backend-config="token=${TF_API_TOKEN}"
   persist_to_workspace:
-    root: /home/circleci/project
+    root: .
     paths:
       - /home/circleci/project
 
@@ -47,7 +47,7 @@ apply_job: &apply_job
           terraform init -backend-config="token=${TF_API_TOKEN}"
           terraform apply --auto-approve
     - persist_to_workspace:
-        root: /home/circleci/project
+        root: .
         paths:
           - /home/circleci/project
 
@@ -66,7 +66,7 @@ jobs:
             terraform init -backend-config="token=${TF_API_TOKEN}"
             terraform fmt
       - persist_to_workspace:
-          root: /home/circleci/project
+          root: .
           paths:
           - /home/circleci/project
 
@@ -82,7 +82,7 @@ jobs:
             cd /home/circleci/project/
             terraform plan
       - persist_to_workspace:
-          root: /home/circleci/project
+          root: .
           paths:
             - /home/circleci/project
 
