@@ -30,9 +30,6 @@ jobs:
       - run:
           name: terraform apply
           command: |
-            cd && touch /root/.bashrc
-            source /root/.bashrc
-            cd /tmp/project/
             terraform apply --auto-approve
       - persist_to_workspace:
           root: .
@@ -62,13 +59,10 @@ jobs:
       - run:
           name: terraform destroy
           command: |
-            cd && touch /root/.bashrc
-            source /root/.bashrc
-            cd /tmp/project/
             terraform destroy --auto-approve
 workflows:
   version: 2
-  build_plan_approve_apply:
+  plan_approve_apply:
     jobs:
       - plan
       - apply:
