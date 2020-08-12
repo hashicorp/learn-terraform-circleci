@@ -80,7 +80,7 @@ workflows:
       - hold:
           type: approval
           requires:
-            - deployment
+            - deploy
       - destroy:
           requires:
             - hold
