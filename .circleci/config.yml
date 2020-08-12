@@ -5,7 +5,7 @@ references:
 base_image: &base_image
   hashicorp/terraform:light
 
-- persist_to_workspace: &persist_to_workspace
+persist_to_workspace: &persist_to_workspace
   root: .
   paths:
     - ~/project
