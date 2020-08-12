@@ -5,11 +5,6 @@ references:
 base_image: &base_image
   hashicorp/terraform:light
 
-persist_to_workspace: &persist_to_workspace
-  root: .
-  paths:
-      - ~/project
-
 working_directory: &working_directory
   ~/project
 
@@ -32,6 +27,11 @@ terraform_init: &terraform_init
       source $BASH_ENV
       cd ~/project/
       terraform init -backend-config="token=${TF_API_TOKEN}"
+  persist_to_workspace:
+    root: .
+    paths:
+      - ~/project
+
 
 apply_job: &apply_job
   <<: *default_config
@@ -46,7 +46,10 @@ apply_job: &apply_job
           cd ~/project/
           terraform init -backend-config="token=${TF_API_TOKEN}"
           terraform apply --auto-approve
-    - *persist_to_workspace
+    - persist_to_workspace:
+        root: .
+        paths:
+          - ~/project
 
 jobs:
 
@@ -62,8 +65,10 @@ jobs:
             cd ~/project/
             terraform init -backend-config="token=${TF_API_TOKEN}"
             terraform fmt
-      - *persist_to_workspace
-
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ~/project
 
   plan:
     <<: *default_config
@@ -76,8 +81,10 @@ jobs:
             source $BASH_ENV
             cd ~/project/
             terraform plan
-      - *persist_to_workspace
-
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ~/project
 
 
   apply:
