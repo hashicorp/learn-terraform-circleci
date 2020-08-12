@@ -8,7 +8,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: terraform fmt
+          name: terraform fmt and plan
           command: |
             cd && touch /root/.bashrc
             source /root/.bashrc
@@ -28,12 +28,12 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform fmt
+          name: terraform apply
           command: |
             cd && touch /root/.bashrc
             source /root/.bashrc
             cd /tmp/project/
-            terraform apply
+            terraform apply --auto-approve
       - persist_to_workspace:
           root: .
           paths:
@@ -51,6 +51,7 @@ jobs:
             git clone https://github.com/hashicorp/learn-terraform-circleci/ .
             pwd
             aws s3 sync --acl public-read "/home/circleci/project/assets" s3://${APP_BUCKET}
+
   destroy:
     working_directory: /tmp/project
     docker:
@@ -59,7 +60,7 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform fmt
+          name: terraform destroy
           command: |
             cd && touch /root/.bashrc
             source /root/.bashrc
