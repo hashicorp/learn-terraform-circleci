@@ -19,21 +19,7 @@ jobs:
           root: .
           paths:
             - .
-  apply:
-    steps:
-      - attach_workspace:
-        at: .
-      - run:
-          name: terraform fmt
-          command: |
-            cd && touch /root/.bashrc
-            source /root/.bashrc
-            cd /tmp/project/
-            terraform apply
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
+
   deploy:
     docker: [{ image: "circleci/python:latest" }]
     working_directory: "/tmp/project"
@@ -62,7 +48,9 @@ workflows:
   build_plan_approve_apply:
     jobs:
       - plan
-      - apply
+      - apply:
+          requires:
+            - plan
       - deployment:
           requires:
             - apply
