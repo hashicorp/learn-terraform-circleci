@@ -6,7 +6,7 @@ base_image: &base_image
   hashicorp/terraform:light
 
 working_directory: &working_directory
-  /home/circleci/project
+  /tmp/
 
 default_config: &default_config
   docker:
@@ -25,12 +25,12 @@ terraform_init: &terraform_init
     command: |
       cd && touch $BASH_ENV
       source $BASH_ENV
-      cd /home/circleci/project/
+      cd /tmp/project/
       terraform init -backend-config="token=${TF_API_TOKEN}"
   persist_to_workspace:
-    root: .
+    root: /tmp
     paths:
-      - /home/circleci/project
+      - project
 
 
 apply_job: &apply_job
@@ -43,13 +43,13 @@ apply_job: &apply_job
         command: |
           cd && touch $BASH_ENV
           source $BASH_ENV
-          cd /home/circleci/project/
+          cd /tmp/project/
           terraform init -backend-config="token=${TF_API_TOKEN}"
           terraform apply --auto-approve
     - persist_to_workspace:
-        root: .
+        root: /tmp/
         paths:
-          - /home/circleci/project
+          - project
 
 jobs:
 
@@ -62,13 +62,13 @@ jobs:
           command: |
             cd && touch $BASH_ENV
             source $BASH_ENV
-            cd /home/circleci/project/
+            cd /tmp/project/
             terraform init -backend-config="token=${TF_API_TOKEN}"
             terraform fmt
       - persist_to_workspace:
-          root: .
+          root: /tmp/
           paths:
-          - /home/circleci/project
+          - project
 
   plan:
     <<: *default_config
@@ -79,12 +79,12 @@ jobs:
           command: |
             cd && touch $BASH_ENV
             source $BASH_ENV
-            cd /home/circleci/project/
+            cd /tmp/project/
             terraform plan
       - persist_to_workspace:
-          root: .
+          root: /tmp/
           paths:
-            - /home/circleci/project
+            - project
 
 
   apply:
@@ -94,7 +94,7 @@ jobs:
 
   deployment:
     docker: [{ image: "circleci/python:latest" }]
-    working_directory: "/home/circleci/project"
+    working_directory: "/tmp/project"
 
     steps:
       - run:
@@ -115,7 +115,7 @@ jobs:
           name: "Destruction of env"
           command: |
             source $BASH_ENV
-            cd /home/circleci/project/
+            cd /tmp/project/
             terraform destroy --auto-approve
 
 
