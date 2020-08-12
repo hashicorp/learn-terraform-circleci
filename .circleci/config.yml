@@ -26,7 +26,7 @@ jobs:
       - image: hashicorp/terraform:light
     steps:
       - attach_workspace:
-        at: .
+          at: .
       - run:
           name: terraform fmt
           command: |
