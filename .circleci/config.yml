@@ -8,7 +8,7 @@ base_image: &base_image
 persist_to_workspace: &persist_to_workspace
   root: .
   paths:
-    - ~/project
+      - ~/project
 
 working_directory: &working_directory
   ~/project
@@ -134,4 +134,3 @@ workflows:
       - destroy:
           requires:
             - hold
-
