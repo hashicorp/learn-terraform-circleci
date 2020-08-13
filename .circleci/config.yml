@@ -15,6 +15,7 @@ jobs:
             cd /tmp/project/
             terraform init -input=false
             terraform fmt && terraform plan -out=tfplan -var-file=variables.tfvars
+            pwd
       - persist_to_workspace:
           root: .
           paths:
