@@ -28,9 +28,9 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform apply -input=false
+          name: terraform apply 
           command: |
-            terraform apply plan
+            terraform apply -input=false
       - persist_to_workspace:
           root: .
           paths:
