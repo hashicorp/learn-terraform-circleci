@@ -8,7 +8,6 @@ terraform {
     }
   }
 }
-
 provider "aws" {
   region = var.region
 }
@@ -43,9 +42,9 @@ resource "aws_iam_user_policy" "circleci" {
   policy = data.template_file.circleci_policy.rendered
 }
 
-resource "aws_s3_bucket" "portfolio" {
+resource "aws_s3_bucket" "app" {
   tags = {
-    Name = "Portfolio Website Bucket"
+    Name = "App Bucket"
   }
 
   bucket = "${var.app}.${var.label}"
@@ -59,6 +58,15 @@ resource "aws_s3_bucket" "portfolio" {
 
 }
 
+resource "aws_s3_bucket_object" "app" {
+  acl          = "public-read"
+  key          = "index.html"
+  bucket       = aws_s3_bucket.app.id
+  content      = file("${path.module}/assets/index.html")
+  content_type = "text/html"
+
+}
+
 output "Endpoint" {
-  value = aws_s3_bucket.portfolio.website_endpoint
+  value = aws_s3_bucket.app.website_endpoint
 }
