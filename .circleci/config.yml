@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  plan:
+  apply-plan:
     working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:light
@@ -14,7 +14,7 @@ jobs:
             source /root/.bashrc
             cd /tmp/project/
             terraform init -input=false
-            terraform fmt && terraform plan -out=tfplan -var-file=variables.tfvars
+            terraform fmt && terraform plan -out tfapply -var-file variables.tfvars
             pwd
       - persist_to_workspace:
           root: .
@@ -31,12 +31,24 @@ jobs:
       - run:
           name: terraform
           command: |
-            pwd
-            terraform apply -input=false tfplan -var-file=variables.tfvars
+            terraform apply tfapply -input=false -var-file variables.tfvars
       - persist_to_workspace:
           root: .
           paths:
             - .
+
+  destroy-plan:
+    working_directory: /tmp/project
+    docker:
+      - image: hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform create destroy plan
+          command: |
+            pwd
+            terraform plan -destroy -out=tfdestroy
 
   destroy:
     working_directory: /tmp/project
@@ -48,24 +60,25 @@ jobs:
       - run:
           name: terraform destroy
           command: |
-            terraform destroy -input=false --auto-approve
+            pwd
+            terraform apply -input=false tfdestroy -var-file variables.tfvars
 
 workflows:
   version: 2
   plan_approve_apply:
     jobs:
-      - plan
+      - plan-apply
       - hold-apply:
           type: approval
           requires:
-            - plan
+            - plan-apply
       - apply:
           requires:
             - hold-apply
-      - hold-destroy:
+      - plan-destroy:
           type: approval
           requires:
             - apply
       - destroy:
           requires:
-            - hold-destroy
+            - plan-destroy
