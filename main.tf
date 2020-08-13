@@ -62,7 +62,7 @@ resource "aws_s3_bucket_object" "app" {
   acl          = "public-read"
   key          = "index.html"
   bucket       = aws_s3_bucket.app.id
-  content      = file("./assets/index.html")
+  content      = file("./assets/terramino.html")
   content_type = "text/html"
 
 }
