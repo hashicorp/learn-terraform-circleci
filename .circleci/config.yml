@@ -81,7 +81,7 @@ workflows:
       - hold-destroy:
           type: approval
           requires:
-            - apply
+            - plan-destroy
       - destroy:
           requires:
             - hold-destroy
