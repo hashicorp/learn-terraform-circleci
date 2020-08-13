@@ -1,13 +1,3 @@
-terraform {
-  backend "remote" {
-    hostname     = "app.terraform.io"
-    organization = "hashicorp-rachel"
-
-    workspaces {
-      name = "learn-terraform-circleci"
-    }
-  }
-}
 provider "aws" {
   region = var.region
 }
