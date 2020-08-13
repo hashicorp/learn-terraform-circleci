@@ -27,7 +27,7 @@ resource "aws_iam_access_key" "circleci" {
 data "template_file" "circleci_policy" {
   template = file("circleci_s3_access.tpl.json")
   vars = {
-    s3_bucket_arn = aws_s3_bucket.portfolio.arn
+    s3_bucket_arn = aws_s3_bucket.app.arn
   }
 }
 
