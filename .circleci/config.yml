@@ -32,7 +32,7 @@ jobs:
           name: terraform
           command: |
             pwd
-            terraform apply tfplan -input=false -var-file=variables.tfvars
+            terraform apply -input=false tfplan -var-file=variables.tfvars
       - persist_to_workspace:
           root: .
           paths:
