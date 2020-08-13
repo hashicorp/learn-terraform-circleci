@@ -48,7 +48,7 @@ jobs:
           name: terraform create destroy plan
           command: |
             pwd
-            terraform plan -destroy -out tfdestroy -var-file variables.tfvars
+            terraform plan -destroy -out tfdestroy 
 
   destroy:
     working_directory: /tmp/project
@@ -76,9 +76,12 @@ workflows:
           requires:
             - hold-apply
       - plan-destroy:
+          requires:
+            - apply
+      - hold-destroy:
           type: approval
           requires:
             - apply
       - destroy:
           requires:
-            - plan-destroy
+            - hold-destroy
