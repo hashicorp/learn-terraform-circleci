@@ -13,8 +13,8 @@ jobs:
             cd && touch /root/.bashrc
             source /root/.bashrc
             cd /tmp/project/
-            terraform init -backend-config="token=${TF_API_TOKEN}"
-            terraform fmt && terraform plan
+            terraform init -backend-config="token=${TF_API_TOKEN}" -input=false
+            terraform fmt && terraform plan -out=tfplan -input=false
       - persist_to_workspace:
           root: .
           paths:
@@ -28,26 +28,13 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform apply
+          name: terraform apply -input=false tfplan
           command: |
-            terraform apply --auto-approve
+            terraform apply plan
       - persist_to_workspace:
           root: .
           paths:
             - .
-
-  deploy:
-    docker: [{ image: "circleci/python:latest" }]
-    working_directory: "/tmp/project"
-    steps:
-      - run:
-          name: "Push to S3"
-          command: |
-            pip install --user awscli
-            export PATH="~/.local/bin:$PATH"
-            git clone https://github.com/hashicorp/learn-terraform-circleci/ .
-            pwd
-            aws s3 sync --acl public-read "/tmp/project/assets" s3://${APP_BUCKET}
 
   destroy:
     working_directory: /tmp/project
@@ -59,22 +46,24 @@ jobs:
       - run:
           name: terraform destroy
           command: |
-            terraform destroy --auto-approve
+            terraform destroy -input=false --auto-approve
+
 workflows:
   version: 2
   plan_approve_apply:
     jobs:
       - plan
-      - apply:
-          requires:
-            - plan
-      - deploy:
-          requires:
-            - apply
-      - hold:
+      - hold-apply:
           type: approval
           requires:
-            - deploy
+            - plan
+      - apply:
+          requires:
+            - hold-apply
+      - hold-destroy:
+          type: approval
+          requires:
+            - apply
       - destroy:
           requires:
-            - hold
+            - hold-destroy
