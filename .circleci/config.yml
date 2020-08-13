@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  apply-plan:
+  plan-apply:
     working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:light
@@ -37,7 +37,7 @@ jobs:
           paths:
             - .
 
-  destroy-plan:
+  plan-destroy:
     working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:light
