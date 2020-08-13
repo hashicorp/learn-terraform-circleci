@@ -21,7 +21,6 @@ jobs:
             - .
 
   apply:
-    working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:light
     steps:
@@ -37,7 +36,6 @@ jobs:
             - .
 
   plan-destroy:
-    working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:light
     steps:
@@ -50,7 +48,6 @@ jobs:
             ls
 
   destroy:
-    working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:light
     steps:
