@@ -55,6 +55,7 @@ jobs:
       - run:
           name: terraform destroy
           command: |
+            cd /tmp/project
             terraform apply destroy
 
 workflows:
