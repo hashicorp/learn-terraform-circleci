@@ -15,7 +15,6 @@ jobs:
             cd /tmp/project/
             terraform init -input=false
             terraform fmt && terraform plan -out tfapply -var-file variables.tfvars
-            pwd
       - persist_to_workspace:
           root: .
           paths:
@@ -47,8 +46,8 @@ jobs:
       - run:
           name: terraform create destroy plan
           command: |
-            pwd
-            terraform plan -destroy -out tfdestroy 
+            terraform plan -destroy -out tfdestroy -var-file variables.tfvars
+            ls
 
   destroy:
     working_directory: /tmp/project
@@ -60,8 +59,7 @@ jobs:
       - run:
           name: terraform destroy
           command: |
-            pwd
-            terraform apply tfdestroy
+            terraform apply "tfdestroy"
 
 workflows:
   version: 2
