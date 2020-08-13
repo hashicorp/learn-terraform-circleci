@@ -61,7 +61,7 @@ jobs:
           name: terraform destroy
           command: |
             pwd
-            terraform apply -input=false tfdestroy -var-file variables.tfvars
+            terraform apply tfdestroy 
 
 workflows:
   version: 2
