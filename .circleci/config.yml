@@ -44,8 +44,7 @@ jobs:
       - run:
           name: terraform create destroy plan
           command: |
-            terraform plan -destroy -out tfdestroy -var-file variables.tfvars
-            ls
+            terraform plan -destroy -out=destroy -var-file variables.tfvars
 
   destroy:
     docker:
@@ -56,8 +55,7 @@ jobs:
       - run:
           name: terraform destroy
           command: |
-            ls
-            terraform apply "tfdestroy"
+            terraform apply destroy
 
 workflows:
   version: 2
