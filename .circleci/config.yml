@@ -13,8 +13,8 @@ jobs:
             cd && touch /root/.bashrc
             source /root/.bashrc
             cd /tmp/project/
-            terraform init -backend-config="token=${TF_API_TOKEN}"
-            terraform fmt && terraform plan
+            terraform init -backend-config="token=${TF_API_TOKEN}" -input=false
+            terraform fmt && terraform plan -out=tfplan -input=false
       - persist_to_workspace:
           root: .
           paths:
@@ -28,9 +28,9 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform apply
+          name: terraform apply -input=false tfplan
           command: |
-            terraform apply --auto-approve
+            terraform apply plan
       - persist_to_workspace:
           root: .
           paths:
@@ -46,7 +46,7 @@ jobs:
       - run:
           name: terraform destroy
           command: |
-            terraform destroy --auto-approve
+            terraform destroy -input=false --auto-approve
 
 workflows:
   version: 2
