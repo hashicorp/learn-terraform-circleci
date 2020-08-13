@@ -8,13 +8,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: terraform fmt and plan
+          name: terraform init & fmt
           command: |
             cd && touch /root/.bashrc
             source /root/.bashrc
             cd /tmp/project/
-            terraform init -backend-config="token=${TF_API_TOKEN}" -input=false
-            terraform fmt && terraform plan -input=false
+            terraform init -input=false
+            terraform fmt && terraform plan -out=tfplan
       - persist_to_workspace:
           root: .
           paths:
@@ -28,9 +28,9 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform apply 
+          name: terraform
           command: |
-            terraform apply -input=false
+            terraform apply tfplan -input=false
       - persist_to_workspace:
           root: .
           paths:
