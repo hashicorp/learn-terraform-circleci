@@ -31,7 +31,7 @@ jobs:
       - run:
           name: terraform
           command: |
-            terraform apply tfapply -input=false -var-file variables.tfvars
+            terraform apply tfapply -var-file variables.tfvars
       - persist_to_workspace:
           root: .
           paths:
