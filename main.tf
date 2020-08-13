@@ -41,7 +41,7 @@ resource "aws_s3_bucket" "app" {
   acl    = "public-read"
 
   website {
-    index_document = "${var.app}.html"
+    index_document = "index.html"
     error_document = "error.html"
   }
   force_destroy = true
@@ -52,7 +52,7 @@ resource "aws_s3_bucket_object" "app" {
   acl          = "public-read"
   key          = "index.html"
   bucket       = aws_s3_bucket.app.id
-  content      = file("./assets/terramino.html")
+  content      = file("./assets/index.html")
   content_type = "text/html"
 
 }
