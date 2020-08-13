@@ -48,7 +48,7 @@ jobs:
           name: terraform create destroy plan
           command: |
             pwd
-            terraform plan -destroy -out=tfdestroy
+            terraform plan -destroy -out tfdestroy
 
   destroy:
     working_directory: /tmp/project
@@ -61,7 +61,7 @@ jobs:
           name: terraform destroy
           command: |
             pwd
-            terraform apply tfdestroy 
+            terraform apply tfdestroy -var-file variables.tfvars
 
 workflows:
   version: 2
