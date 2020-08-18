@@ -8,13 +8,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: terraform init & fmt
+          name: terraform init & plan
           command: |
             cd && touch /root/.bashrc
             source /root/.bashrc
             cd /tmp/project/
             terraform init -input=false
-            terraform fmt && terraform plan -out tfapply -var-file variables.tfvars
+            terraform plan -out tfapply -var-file variables.tfvars
       - persist_to_workspace:
           root: .
           paths:
