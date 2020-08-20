@@ -12,6 +12,7 @@ resource "aws_s3_bucket" "terraform_state" {
   bucket = "${random_uuid.randomid.result}-backend"
   # Enable versioning so we can see the full revision history of our
   # state files
+  force_destroy = true
   versioning {
     enabled = true
   }
