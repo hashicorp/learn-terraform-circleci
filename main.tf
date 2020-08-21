@@ -45,7 +45,7 @@ resource "aws_s3_bucket" "app" {
     Name = "App Bucket"
   }
 
-  bucket = "${var.app}.${var.label}"
+  bucket = "${var.app}.${var.label}.${random_uuid.randomid.result}"
   acl    = "public-read"
 
   website {
