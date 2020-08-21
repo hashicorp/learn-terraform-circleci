@@ -13,6 +13,8 @@ provider "aws" {
 provider "template" {
 }
 
+resource "random_uuid" "randomid" {}
+
 resource "aws_iam_user" "circleci" {
   name = var.user
   path = "/system/"
