@@ -1,10 +1,7 @@
 terraform {
-  backend "remote" {
-    hostname     = "app.terraform.io"
-    organization = "<YOUR-ORG-NAME>"
-
-    workspaces {
-      name = "learn-terraform-circleci"
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
     }
   }
 }
@@ -15,6 +12,8 @@ provider "aws" {
 
 provider "template" {
 }
+
+resource "random_uuid" "randomid" {}
 
 resource "aws_iam_user" "circleci" {
   name = var.user
@@ -28,7 +27,7 @@ resource "aws_iam_access_key" "circleci" {
 data "template_file" "circleci_policy" {
   template = file("circleci_s3_access.tpl.json")
   vars = {
-    s3_bucket_arn = aws_s3_bucket.portfolio.arn
+    s3_bucket_arn = aws_s3_bucket.app.arn
   }
 }
 
@@ -43,22 +42,31 @@ resource "aws_iam_user_policy" "circleci" {
   policy = data.template_file.circleci_policy.rendered
 }
 
-resource "aws_s3_bucket" "portfolio" {
+resource "aws_s3_bucket" "app" {
   tags = {
-    Name = "Portfolio Website Bucket"
+    Name = "App Bucket"
   }
 
-  bucket = "${var.app}.${var.label}"
+  bucket = "${var.app}.${var.label}.${random_uuid.randomid.result}"
   acl    = "public-read"
 
   website {
-    index_document = "${var.app}.html"
+    index_document = "index.html"
     error_document = "error.html"
   }
   force_destroy = true
 
 }
 
+resource "aws_s3_bucket_object" "app" {
+  acl          = "public-read"
+  key          = "index.html"
+  bucket       = aws_s3_bucket.app.id
+  content      = file("./assets/index.html")
+  content_type = "text/html"
+
+}
+
 output "Endpoint" {
-  value = aws_s3_bucket.portfolio.website_endpoint
+  value = aws_s3_bucket.app.website_endpoint
 }
