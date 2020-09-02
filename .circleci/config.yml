@@ -26,7 +26,7 @@ jobs:
       - run:
           name: terraform
           command: |
-            terraform apply tfapply
+            terraform apply -auto-approve tfapply
       - persist_to_workspace:
           root: .
           paths:
@@ -56,7 +56,7 @@ jobs:
       - run:
           name: terraform destroy
           command: |
-            terraform apply tfdestroy
+            terraform apply -auto-approve tfdestroy
 
 workflows:
   version: 2
