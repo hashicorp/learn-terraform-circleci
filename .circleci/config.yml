@@ -10,7 +10,7 @@ jobs:
       - run:
           name: terraform init & plan
           command: |
-            terraform init -input=false
+            terraform init -backend-config="token=$TOKEN" -input=false
             terraform plan -out tfapply -var-file variables.tfvars
       - persist_to_workspace:
           root: .
