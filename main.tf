@@ -7,7 +7,6 @@ terraform {
   backend "remote" {
         organization = "yordanh_free"
         workspace = "11111111"
-        token=var.token
     }
 }
 
