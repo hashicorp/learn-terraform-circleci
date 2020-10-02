@@ -2,8 +2,10 @@ terraform {
   
   backend "remote" {
         organization = "yordanh_free"
-        workspaces = "11111111"
-    }
+        workspaces { 
+          name= "11111111"
+          }
+       }
 }
 
 
