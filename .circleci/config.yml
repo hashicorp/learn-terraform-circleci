@@ -14,11 +14,9 @@ jobs:
             release_branch_env="$(echo ${CIRCLE_BRANCH} | cut -d'/' -f2)"
             echo ${release_branch_env}
       - run:
-          name: "Setup env from release branch name"
+          name: "Setup ENV from release branch name"
           command: |
-            release_branch_env="$(echo ${CIRCLE_BRANCH} | cut -d'/' -f2)"
-            echo ${release_branch_env}
-            echo 'export ENV=$(echo ${release_branch_env})' >> $BASH_ENV
+            echo 'export ENV=$(echo ${CIRCLE_BRANCH} | cut -d'/' -f2)' >> $BASH_ENV
             echo ${ENV}
       - run:
           name: (api) terraform init & plan
