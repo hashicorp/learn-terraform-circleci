@@ -7,19 +7,32 @@ jobs:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
     steps:
       - checkout
+      - run: # print the name of the branch we're on
+          name: "What branch am I on?"
+          command: |
+            echo ${CIRCLE_BRANCH}
+            release_branch_env="$(echo ${CIRCLE_BRANCH} | cut -d'/' -f2)"
+            echo ${release_branch_env}
+      - run:
+          name: "Setup env from release branch name"
+          command: |
+            release_branch_env="$(echo ${CIRCLE_BRANCH} | cut -d'/' -f2)"
+            echo ${release_branch_env}
+            echo 'export ENV=${release_branch_env}' >> $BASH_ENV
+            echo ${ENV}
       - run:
           name: (api) terraform init & plan
           command: |
             cd api
             terraform init -input=false
-            terraform workspace select dev || terraform workspace new dev
+            terraform workspace select ${ENV} || terraform workspace new ${ENV}
             terraform plan -out tfapply -var-file variables.tfvars
       - run:
           name: (webapp) terraform init & plan
           command: |
             cd webapp
             terraform init -input=false
-            terraform workspace select dev || terraform workspace new dev
+            terraform workspace select ${ENV} || terraform workspace new ${ENV}
             terraform plan -out tfapply -var-file variables.tfvars
       - persist_to_workspace:
           root: .
