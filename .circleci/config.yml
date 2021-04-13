@@ -89,7 +89,10 @@ workflows:
   version: 2
   plan_approve_apply:
     jobs:
-      - plan-apply
+      - plan-apply:
+          filters:
+            branches:
+              only: /release\/.*/
       - hold-apply:
           type: approval
           requires:
