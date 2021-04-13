@@ -22,6 +22,7 @@ jobs:
       - run:
           name: (api) terraform init & plan
           command: |
+            source $BASH_ENV
             cd api
             terraform init -input=false
             terraform workspace select $ENV || terraform workspace new $ENV
@@ -29,6 +30,7 @@ jobs:
       - run:
           name: (webapp) terraform init & plan
           command: |
+            source $BASH_ENV
             cd webapp
             terraform init -input=false
             terraform workspace select $ENV || terraform workspace new $ENV
