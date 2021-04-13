@@ -8,8 +8,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: terraform init & plan
+          name: (api) terraform init & plan
           command: |
+            cd api
+            terraform init -input=false
+            terraform workspace select dev || terraform workspace new dev
+            terraform plan -out tfapply -var-file variables.tfvars
+      - run:
+          name: (webapp) terraform init & plan
+          command: |
+            cd webapp
             terraform init -input=false
             terraform workspace select dev || terraform workspace new dev
             terraform plan -out tfapply -var-file variables.tfvars
@@ -25,8 +33,14 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform
+          name: (api) terraform apply
           command: |
+            cd api
+            terraform apply -auto-approve tfapply
+      - run:
+          name: (webapp) terraform apply
+          command: |
+            cd webapp
             terraform apply -auto-approve tfapply
       - persist_to_workspace:
           root: .
@@ -40,8 +54,14 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform create destroy plan
+          name: (webapp) terraform create destroy plan
           command: |
+            cd webapp
+            terraform plan -destroy -out tfdestroy -var-file variables.tfvars
+      - run:
+          name: (api) terraform create destroy plan
+          command: |
+            cd api
             terraform plan -destroy -out tfdestroy -var-file variables.tfvars
       - persist_to_workspace:
           root: .
@@ -55,8 +75,14 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform destroy
+          name: (webapp) terraform destroy
           command: |
+            cd webapp
+            terraform apply -auto-approve tfdestroy
+      - run:
+          name: (api) terraform destroy
+          command: |
+            cd api
             terraform apply -auto-approve tfdestroy
 
 workflows:
