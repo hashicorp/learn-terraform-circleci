@@ -49,7 +49,6 @@ resource "aws_s3_bucket_object" "app" {
   key          = "batch.zip"
   bucket       = aws_s3_bucket.app.id
   content      = data.archive_file.sample_batch.output_path
-  content_type = "text/html"
 }
 
 output "api_s3_bucket" {
