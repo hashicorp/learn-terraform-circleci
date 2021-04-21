@@ -7,16 +7,20 @@ jobs:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
     steps:
       - checkout
-      - run: # print the name of the branch we're on
+      - run:
           name: "What branch am I on?"
           command: |
             echo ${CIRCLE_BRANCH}
-            release_branch_env="$(echo ${CIRCLE_BRANCH} | cut -d'/' -f2)"
-            echo ${release_branch_env}
       - run:
-          name: "Setup ENV from release branch name"
+          name: "Setup ENV from branch name"
           command: |
-            echo 'export ENV=$(echo ${CIRCLE_BRANCH} | cut -d'/' -f2)' >> $BASH_ENV
+            if [[ $CIRCLE_BRANCH == release/prod* ]];
+            then
+              echo 'export ENV=prod' >> $BASH_ENV
+            else
+              echo 'export ENV=stage' >> $BASH_ENV
+            fi
+
             source $BASH_ENV
             echo ${ENV}
       - run:
@@ -106,7 +110,11 @@ workflows:
       - plan-apply:
           filters:
             branches:
-              only: /release\/.*/
+              only:
+                # Run the job if branch name contains `JIRA-<ticketnumber>` or `jira-<ticketnumber>`
+                - /.*(jira|JIRA)-\d+.*/
+                # Run the job if branch name starts with `release/prod/`
+                - /release\/prod\/.*/
       - hold-apply:
           type: approval
           requires:
