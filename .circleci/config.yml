@@ -14,7 +14,7 @@ jobs:
       - run:
           name: "Setup ENV from branch name"
           command: |
-            if [[ $CIRCLE_BRANCH == release/prod* ]];
+            if [[ $CIRCLE_BRANCH == release\/prod* ]];
             then
               echo 'export ENV=prod' >> $BASH_ENV
             else
