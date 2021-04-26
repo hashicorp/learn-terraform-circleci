@@ -31,8 +31,9 @@ commands:
 jobs:
   test-dev:
     docker:
-    - image: circleci/node:latest
+      - image: circleci/node:latest
     steps:
+      - checkout
       - check-pr:
           base: master
           head: dev
