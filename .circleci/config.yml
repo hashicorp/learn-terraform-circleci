@@ -37,7 +37,7 @@ commands:
           name: (<< parameters.tf-project >>) terraform init & plan
           command: |
             source $BASH_ENV
-            cd ${tf-project}
+            cd << parameters.tf-project >>
             terraform init -input=false
             terraform workspace select $ENV || terraform workspace new $ENV
             terraform plan -out tfapply -var-file variables.tfvars
