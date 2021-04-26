@@ -27,6 +27,21 @@ commands:
                       << parameters.run >>
                     fi
                   fi
+  tf-plan-apply:
+    description: "A very simple command for demonstration purposes"
+    parameters:
+      tf-project:
+        type: string
+    steps:
+      - run:
+          name: (<< parameters.tf-project >>) terraform init & plan
+          command: |
+            source $BASH_ENV
+            cd ${tf-project}
+            terraform init -input=false
+            terraform workspace select $ENV || terraform workspace new $ENV
+            terraform plan -out tfapply -var-file variables.tfvars
+
 
 jobs:
   test-dev:
@@ -40,11 +55,42 @@ jobs:
           run: |
               echo "hello world!"
               # implement features here!
+  test-tf:
+    working_directory: /tmp/project
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - checkout
+      - run:
+          name: "What branch am I on?"
+          command: |
+            echo ${CIRCLE_BRANCH}
+      - run:
+          name: "Setup ENV from branch name"
+          command: |
+            if [[ "$CIRCLE_BRANCH" =~ ^release\/prod* ]];
+            then
+              echo 'export ENV=prod' >> $BASH_ENV
+            else
+              echo 'export ENV=stage' >> $BASH_ENV
+            fi
+
+            source $BASH_ENV
+            echo ${ENV}
+      - tf-plan-apply:
+          tf-project: api
+      - tf-plan-apply:
+          tf-project: webapp
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
 workflows:
   test:
     jobs:
       - test-dev
+      - test-tf
 
 # version: 2
 
