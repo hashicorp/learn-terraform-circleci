@@ -2,31 +2,37 @@ version: 2.1
 
 commands:
   check-pr:
-    description: "Run API depending on branch"
-    parameters:
-      head:
-        type: string
-      base:
-        type: string
-      run:
-        type: string
+    description: "Set ENV from Pull Request Base Branch"
     steps:
-      - when:
-          condition:
-            equal: [ << parameters.head >>, << pipeline.git.branch >> ]
-          steps:
-            - run:
-                name: Check Pull Request from << parameters.head >> to << parameters.base >>
-                command: |
-                  if [ -n $CIRCLE_PULL_REQUEST ]; then
-                    pr=$(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//")
+      # - run:
+      #     name: Install curl and jq
+      #     command: |
+      #       apk add --no-cache curl jq
+      - run:
+          name: Set ENV from Pull Request Base Branch
+          command: |
+            if [ -n $CIRCLE_PULL_REQUEST ]; then
+              latest_pr=$(echo ${CIRCLE_PULL_REQUESTS##*,})
+              pr=$(echo https://api.github.com/repos/${latest_pr:19} | sed "s/\/pull\//\/pulls\//")
 
-                    base=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" $pr | jq '.base.ref')
+              base=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" $pr | jq '.base.ref')
 
-                    if [[ '"<< parameters.base >>"' = "$base" ]]; then
-                      << parameters.run >>
-                    fi
-                  fi
+              echo ${base}
+
+              if [[ '"prod"' = "$base" ]]; then
+                echo 'export ENV="prod"' >> $BASH_ENV
+                source $BASH_ENV
+              elif [[ '"stage"' = "$base" ]]; then
+                echo 'export ENV="stage"' >> $BASH_ENV
+                source $BASH_ENV
+              else
+                echo 'Unhandled base branch: "$base"'
+                exit 1
+              fi
+
+              echo ${ENV}
+            fi
+
   tf-plan-apply:
     description: "A very simple command for demonstration purposes"
     parameters:
@@ -49,12 +55,7 @@ jobs:
       - image: circleci/node:latest
     steps:
       - checkout
-      - check-pr:
-          base: master
-          head: dev
-          run: |
-              echo "hello world!"
-              # implement features here!
+
   test-tf:
     working_directory: /tmp/project
     docker:
@@ -90,7 +91,7 @@ workflows:
   test:
     jobs:
       - test-dev
-      - test-tf
+      # - test-tf
 
 # version: 2
 
