@@ -2,14 +2,17 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
+      version = "3.44.0"
     }
   }
 }
 
-resource "random_uuid" "randomid" {}
+provider "aws" {
+  region = "us-east-1"
+}
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "${random_uuid.randomid.result}-backend"
+  bucket_prefix = "circle-ci-backend-"
   # Enable versioning so we can see the full revision history of our
   # state files
   force_destroy = true
