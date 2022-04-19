@@ -5,13 +5,12 @@ terraform {
       version = "3.44.0"
     }
   }
-  required_version = "> 0.14"
-}
-
-backend "s3"
+  backend "s3"
   bucket = "circle-ci-backend-20220419114023343700000001"
   key = "terraform/webapp/terraform.tfstate"
   region = "af-south-1"
+  required_version = "> 0.14"
+}
 
 provider "aws" {
   region = var.region
