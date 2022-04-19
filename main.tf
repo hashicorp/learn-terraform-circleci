@@ -8,6 +8,11 @@ terraform {
   required_version = "> 0.14"
 }
 
+backend "s3"
+  bucket = "circle-ci-backend-20220419114023343700000001"
+  key = "terraform/webapp/terraform.tfstate"
+  region = "af-south-1"
+
 provider "aws" {
   region = var.region
 }
