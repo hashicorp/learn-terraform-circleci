@@ -3,7 +3,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      hashicorp-learn = circleci
+      hashicorp-learn = "circleci"
     }
   }
 }
