@@ -6,12 +6,12 @@ workflows:
     jobs:
       - terraform/fmt:
           checkout: true
-          context: tfc-dev-rita
-					tag: 1.2.0-beta1
+          context: tfc-dev
+          tag: 1.2.0-beta1
       - terraform/validate:
           checkout: true
-          context: tfc-dev-rita
-					tag: 1.2.0-beta1
+          context: tfc-dev
+          tag: 1.2.0-beta1
           requires:
             - terraform/fmt
       # - terraform/plan:
