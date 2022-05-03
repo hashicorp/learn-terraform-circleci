@@ -18,6 +18,7 @@ workflows:
           checkout: true
           context: tfc-dev
           persist-workspace: true
+          tag: 1.2.0-beta1
           requires:
             - terraform/validate
       # - terraform/apply:
