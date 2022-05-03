@@ -14,12 +14,12 @@ workflows:
           tag: 1.2.0-beta1
           requires:
             - terraform/fmt
-      # - terraform/plan:
-      #     checkout: true
-      #     context: terraform
-      #     persist-workspace: true
-      #     requires:
-      #       - terraform/validate
+      - terraform/plan:
+          checkout: true
+          context: tfc-dev
+          persist-workspace: true
+          requires:
+            - terraform/validate
       # - terraform/apply:
       #     attach-workspace: true
       #     context: terraform

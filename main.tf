@@ -15,15 +15,8 @@ resource "aws_s3_bucket" "app" {
     Name = "App Bucket"
   }
 
-  bucket = "${var.app}.${var.label}.${random_uuid.randomid.result}"
-  acl    = "public-read"
-
-  website {
-    index_document = "index.html"
-    error_document = "error.html"
-  }
+  bucket        = "${var.app}.${var.label}.${random_uuid.randomid.result}"
   force_destroy = true
-
 }
 
 resource "aws_s3_bucket_object" "app" {
@@ -34,3 +27,19 @@ resource "aws_s3_bucket_object" "app" {
   content_type = "text/html"
 }
 
+resource "aws_s3_bucket_acl" "bucket" {
+  bucket = aws_s3_bucket.app.id
+  acl    = "public-read"
+}
+
+resource "aws_s3_bucket_website_configuration" "terramino" {
+  bucket = aws_s3_bucket.app.bucket
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
+  }
+}
