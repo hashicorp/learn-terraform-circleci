@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:1.2.0-beta1
     steps:
-			- checkout
+      - checkout
       - run:
           name: terraform
           command: |
