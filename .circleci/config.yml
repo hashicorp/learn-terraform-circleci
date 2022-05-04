@@ -1,21 +1,5 @@
 version: 2.1
 jobs:
-  plan-apply:
-    working_directory: /tmp/project
-    docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:1.2.0-beta1
-    steps:
-      - checkout
-      - run:
-          name: terraform init & plan
-          command: |
-            terraform init -input=false
-            terraform plan -out tfapply -var-file variables.tfvars
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-
   apply:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:1.2.0-beta1
@@ -25,27 +9,12 @@ jobs:
       - run:
           name: terraform
           command: |
-            terraform apply -auto-approve tfapply
+            terraform init -input=false
+            terraform apply -var-file variables.tfvars
       - persist_to_workspace:
           root: .
           paths:
             - .
-
-  plan-destroy:
-    docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:1.2.0-beta1
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: terraform create destroy plan
-          command: |
-            terraform plan -destroy -out tfdestroy -var-file variables.tfvars
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-
   destroy:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:1.2.0-beta1
@@ -55,32 +24,26 @@ jobs:
       - run:
           name: terraform destroy
           command: |
-            terraform apply -auto-approve tfdestroy
+            terraform destroy -var-file variables.tfvars
 
 workflows:
   plan_approve_apply:
     jobs:
-      - plan-apply:
+      - apply:
           context: tfc-dev
       - hold-apply:
           context: tfc-dev
           type: approval
           requires:
-            - plan-apply
-      - apply:
-          context: tfc-dev
-          requires:
-            - hold-apply
-      - plan-destroy:
-          context: tfc-dev
-          requires:
             - apply
-      - hold-destroy:
-          context: tfc-dev
-          type: approval
-          requires:
-            - plan-destroy
-      - destroy:
-          context: tfc-dev
-          requires:
-            - hold-destroy
+      # - plan-destroy:
+      #     context: tfc-dev
+      #     requires:
+      #       - apply
+      # - hold-destroy:
+      #     context: tfc-dev
+      #     type: approval
+      #     requires:
+      #       - plan-destroy
+      # - destroy:
+      #     context: tfc-dev
