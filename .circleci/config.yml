@@ -30,11 +30,12 @@ workflows:
     jobs:
       - apply:
           context: tfc-dev
-      - hold-apply:
-          context: tfc-dev
           type: approval
-          requires:
-            - apply
+      # - hold-apply:
+      #     context: tfc-dev
+      #     type: approval
+      #     requires:
+      #       - apply
       # - plan-destroy:
       #     context: tfc-dev
       #     requires:
