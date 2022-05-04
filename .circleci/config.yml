@@ -10,7 +10,7 @@ jobs:
           name: terraform
           command: |
             terraform init -input=false
-            terraform apply -var-file variables.tfvars
+            terraform apply 
       - persist_to_workspace:
           root: .
           paths:
