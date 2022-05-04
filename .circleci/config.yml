@@ -61,26 +61,26 @@ workflows:
   plan_approve_apply:
     jobs:
       - plan-apply
-					context: tfc-dev
+          context: tfc-dev
       - hold-apply:
-					context: tfc-dev
+          context: tfc-dev
           type: approval
           requires:
             - plan-apply
       - apply:
-					context: tfc-dev
+          context: tfc-dev
           requires:
             - hold-apply
       - plan-destroy:
-					context: tfc-dev
+          context: tfc-dev
           requires:
             - apply
       - hold-destroy:
-					context: tfc-dev
+          context: tfc-dev
           type: approval
           requires:
             - plan-destroy
       - destroy:
-					context: tfc-dev
+          context: tfc-dev
           requires:
             - hold-destroy
