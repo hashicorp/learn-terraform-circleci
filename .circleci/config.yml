@@ -60,7 +60,7 @@ jobs:
 workflows:
   plan_approve_apply:
     jobs:
-      - plan-apply
+      - plan-apply:
           context: tfc-dev
       - hold-apply:
           context: tfc-dev
