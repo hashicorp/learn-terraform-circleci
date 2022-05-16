@@ -19,7 +19,7 @@ resource "aws_s3_bucket" "app" {
   force_destroy = true
 }
 
-resource "aws_s3_bucket_object" "app" {
+resource "aws_s3_object" "app" {
   acl          = "public-read"
   key          = "index.html"
   bucket       = aws_s3_bucket.app.id
