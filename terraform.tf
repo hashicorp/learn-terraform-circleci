@@ -1,5 +1,11 @@
 terraform {
-  cloud {}
+  cloud {
+    organization = "terraform-test007"
+
+    workspaces {
+      name = "terraform-circleCI-github-CICD"
+    }
+  }
 
   required_providers {
     aws = {

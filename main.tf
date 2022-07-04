@@ -1,13 +1,3 @@
-terraform {
-  cloud {
-    organization = "terraform-test007"
-
-    workspaces {
-      name = "terraform-circleCI-github-CICD"
-    }
-  }
-}
-
 provider "aws" {
   region = var.region
 
