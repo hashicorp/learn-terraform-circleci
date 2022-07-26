@@ -1,45 +1,26 @@
 provider "aws" {
-  region = var.region
+  region = "us-east-1"
 
-  default_tags {
-    tags = {
-      hashicorp-learn = "circleci"
-    }
-  }
 }
 
-resource "random_uuid" "randomid" {}
-
-resource "aws_s3_bucket" "app" {
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
   tags = {
-    Name = "App Bucket"
+    Name = "MainVPC"
   }
-
-  bucket        = "${var.app}.${var.label}.${random_uuid.randomid.result}"
-  force_destroy = true
 }
 
-resource "aws_s3_object" "app" {
-  acl          = "public-read"
-  key          = "index.html"
-  bucket       = aws_s3_bucket.app.id
-  content      = file("./assets/index.html")
-  content_type = "text/html"
+resource "aws_instance" "myinstance" {
+  ami           = "ami-0d5eff06f840b45e9"
+  instance_type = "t2.micro"
+  count         = 2
+
 }
+resource "aws_subnet" "main" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.1.0/24"
 
-resource "aws_s3_bucket_acl" "bucket" {
-  bucket = aws_s3_bucket.app.id
-  acl    = "public-read"
-}
-
-resource "aws_s3_bucket_website_configuration" "terramino" {
-  bucket = aws_s3_bucket.app.bucket
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
+  tags = {
+    Name = "Main"
   }
 }
