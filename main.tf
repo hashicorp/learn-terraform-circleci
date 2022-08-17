@@ -12,7 +12,8 @@ resource "random_uuid" "randomid" {}
 
 resource "aws_s3_bucket" "app" {
   tags = {
-    Name = "App Bucket"
+    Name          = "App Bucket"
+    public_bucket = true
   }
 
   bucket        = "${var.app}.${var.label}.${random_uuid.randomid.result}"
