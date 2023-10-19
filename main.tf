@@ -20,20 +20,33 @@ resource "aws_s3_bucket" "app" {
   force_destroy = true
 }
 
-resource "aws_s3_object" "app" {
-  acl          = "public-read"
-  key          = "index.html"
-  bucket       = aws_s3_bucket.app.id
-  content      = file("./assets/index.html")
-  content_type = "text/html"
+resource "aws_s3_bucket_ownership_controls" "app" {
+  bucket = aws_s3_bucket.app.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }
 
-resource "aws_s3_bucket_acl" "bucket" {
+resource "aws_s3_bucket_public_access_block" "app" {
+  bucket = aws_s3_bucket.app.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_acl" "app" {
+  depends_on = [
+    aws_s3_bucket_ownership_controls.app,
+    aws_s3_bucket_public_access_block.app,
+  ]
+
   bucket = aws_s3_bucket.app.id
   acl    = "public-read"
 }
 
-resource "aws_s3_bucket_website_configuration" "terramino" {
+resource "aws_s3_bucket_website_configuration" "app" {
   bucket = aws_s3_bucket.app.bucket
 
   index_document {
@@ -43,4 +56,12 @@ resource "aws_s3_bucket_website_configuration" "terramino" {
   error_document {
     key = "error.html"
   }
+}
+
+resource "aws_s3_object" "app" {
+  acl          = "public-read"
+  key          = "index.html"
+  bucket       = aws_s3_bucket.app.id
+  content      = file("./assets/index.html")
+  content_type = "text/html"
 }
