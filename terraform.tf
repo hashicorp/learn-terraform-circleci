@@ -1,5 +1,11 @@
 terraform {
-  cloud {}
+  cloud {
+    organization = "FirehawkVFX"
+
+    workspaces {
+      name = "learn-terraform-circleci"
+    }
+  }
 
   required_providers {
     aws = {
@@ -10,4 +16,3 @@ terraform {
 
   required_version = ">= 1.2.0"
 }
-
