@@ -29,10 +29,45 @@ resource "aws_s3_bucket_public_access_block" "pub_access" {
   restrict_public_buckets = false
 }
 
+# resource "aws_s3_bucket_policy" "app" {
+#     bucket = aws_s3_bucket.app.id
+#     policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Principal = "*"
+#         Action = [
+#           "s3:*",
+#         ]
+#         Effect = "Allow"
+#         Resource = [
+#           "arn:aws:s3:::${var.app}.${var.label}.${random_uuid.randomid.result}",
+#           "arn:aws:s3:::${var.app}.${var.label}.${random_uuid.randomid.result}/*"
+#         ]
+#       },
+#       {
+#         Sid = "PublicReadGetObject"
+#         Principal = "*"
+#         Action = [
+#           "s3:GetObject",
+#         ]
+#         Effect   = "Allow"
+#         Resource = [
+#           "arn:aws:s3:::${var.app}.${var.label}.${random_uuid.randomid.result}",
+#           "arn:aws:s3:::${var.app}.${var.label}.${random_uuid.randomid.result}/*"
+#         ]
+#       },
+#     ]
+#   })
+  
+#   depends_on = [aws_s3_bucket_public_access_block.pub_access]
+# }
+
+
 resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership" {
   bucket = aws_s3_bucket.app.id
   rule {
-    object_ownership = "ObjectWriter"
+    object_ownership = "BucketOwnerPreferred"
   }
   depends_on = [ aws_s3_bucket_public_access_block.pub_access ]
 }
@@ -63,3 +98,4 @@ resource "aws_s3_bucket_website_configuration" "terramino" {
     key = "error.html"
   }
 }
+
