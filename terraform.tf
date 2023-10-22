@@ -1,11 +1,5 @@
 terraform {
-  cloud {
-    organization = "FirehawkVFX"
-
-    workspaces {
-      name = "learn-terraform-circleci"
-    }
-  }
+  cloud {}
 
   required_providers {
     aws = {
